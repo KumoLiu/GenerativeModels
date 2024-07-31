@@ -132,7 +132,7 @@ class CrossAttention(nn.Module):
         key = key.contiguous()
         value = value.contiguous()
         # x = xformers.ops.memory_efficient_attention(query, key, value, attn_bias=None)
-        x = F.scaled_dot_product_attention(query.transpose(1,2), key.transpose(1,2), value.transpose(1,2)).transpose(1,2)
+        x = F.scaled_dot_product_attention(query.unsqueeze(2).transpose(1,2), key.unsqueeze(2).transpose(1,2), value.unsqueeze(2).transpose(1,2)).transpose(1,2).squeeze(2)
         return x
 
     def _attention(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor) -> torch.Tensor:
