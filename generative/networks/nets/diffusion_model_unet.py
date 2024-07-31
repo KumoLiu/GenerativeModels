@@ -401,9 +401,10 @@ class AttentionBlock(nn.Module):
         query = query.contiguous()
         key = key.contiguous()
         value = value.contiguous()
+        # xformers flash attention
         # x = xformers.ops.memory_efficient_attention(query, key, value, attn_bias=None)
-        print(query.shape, key.shape, value.shape)
-        x = F.scaled_dot_product_attention(query.transpose(1,2), key.transpose(1,2), value.transpose(1,2)).transpose(1,2)
+        # torch flash attention
+        x = F.scaled_dot_product_attention(query.unsqueeze(2).transpose(1,2), key.unsqueeze(2).transpose(1,2), value.unsqueeze(2).transpose(1,2)).transpose(1,2).squeeze(2)
         return x
 
     def _attention(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor) -> torch.Tensor:
@@ -439,7 +440,7 @@ class AttentionBlock(nn.Module):
         query = self.to_q(x)
         key = self.to_k(x)
         value = self.to_v(x)
-
+        # print(query.shape, key.shape, value.shape, '*****')
         # Multi-Head Attention
         query = self.reshape_heads_to_batch_dim(query)
         key = self.reshape_heads_to_batch_dim(key)
