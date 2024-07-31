@@ -131,7 +131,8 @@ class CrossAttention(nn.Module):
         query = query.contiguous()
         key = key.contiguous()
         value = value.contiguous()
-        x = xformers.ops.memory_efficient_attention(query, key, value, attn_bias=None)
+        # x = xformers.ops.memory_efficient_attention(query, key, value, attn_bias=None)
+        x = F.scaled_dot_product_attention(query.transpose(1,2), key.transpose(1,2), value.transpose(1,2)).transpose(1,2)
         return x
 
     def _attention(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor) -> torch.Tensor:
@@ -400,7 +401,9 @@ class AttentionBlock(nn.Module):
         query = query.contiguous()
         key = key.contiguous()
         value = value.contiguous()
-        x = xformers.ops.memory_efficient_attention(query, key, value, attn_bias=None)
+        # x = xformers.ops.memory_efficient_attention(query, key, value, attn_bias=None)
+        print(query.shape, key.shape, value.shape)
+        x = F.scaled_dot_product_attention(query.transpose(1,2), key.transpose(1,2), value.transpose(1,2)).transpose(1,2)
         return x
 
     def _attention(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor) -> torch.Tensor:
